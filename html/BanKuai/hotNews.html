@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="title"></title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/public.css">
+
+    <script src="../../js/jQuery.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/tools.js"></script>
+    <script>
+        $(function () {
+            //赛事帖子的数据获取
+            $.ajax({
+                method: "get",
+                url: "../../php/get_hotNews.php",
+                data: {
+                    news_id: GetUrlString("id")
+                },
+                success: function (result) {
+                    var obj = JSON.parse(result);
+
+                    //获取数据
+                    var data_news = obj.data_news;
+                    var data_reply = obj.data_reply;
+                    var data_like = obj.data_like;
+                    //获取用户id
+                    var user_id = $.cookie("user_id");
+
+                    //文件title改名
+                    var otitle = document.getElementById("title");
+                    $("#title").append(data_news.title)
+
+                    var str = `
+                    <h1 class="news-title">${data_news.title}</h1>
+                    <div class="news-status">
+                        <blockquote>
+                            <p>
+                                发布时间:${data_news.publish_time} 浏览量:${data_news.view_count}次
+                            </p>
+                        </blockquote>
+
+                    </div>
+                    <div class="news-content">
+                        ${data_news.content} 
+                        <br/>
+                        <img src="${data_news.photo}" />
+                    </div>
+                    `;
+                    $(".col-md-8").append(str);
+                    str = `
+                    <ul class="list-group">
+                        <li class="list-group-item active">
+                            <h4>热评
+                                <span class="badge badge-secondary">
+                                    <h5>${obj.num_reply}</h5>
+                                </span>
+                            </h4>
+                        </li>`;
+                    for (var i = 0; i < data_reply.length; i++) {
+                        str += `<li class="list-group-item">
+                            <img src="${data_reply[i].photo}" class="img1">
+                            ${data_reply[i].name} ：${data_reply[i].content}
+                                <span class="pull-right">
+                                    <span class="badge" style="background-color: #F0AD4E;" id="${data_reply[i].reply_id}">${data_reply[i].like_count}</span> `;
+
+                        if (data_like.length != 0) {    
+                            for (var j = 0; j < data_like.length; j++) {
+                                if ((user_id == data_like[j].user_id) && (data_reply[i].reply_id == data_like[j].reply_id)) {
+                                    str += `<span class="dianzan glyphicon glyphicon-thumbs-up" style="color: red;"  value="${data_reply[i].reply_id}"></span>`;
+                                    //break是防止重复输出点红色点赞
+                                    break;
+                                } else if (j == data_like.length-1) {
+                                    str += `<span class="dianzan glyphicon glyphicon-thumbs-up" value="${data_reply[i].reply_id}"></span>`;
+                                }
+                            }
+                        }else{
+                            str += `<span class="dianzan glyphicon glyphicon-thumbs-up" value="${data_reply[i].reply_id}"></span>`;
+                        }
+                    }
+                    str += `</span></li>`;
+
+                    str += `</ul>`;
+                    $(".col-md-4").append(str);
+                },
+                error: function (msg) {
+                    alert(msg);
+                }
+            })
+
+            $(".col-md-4").on("click", ".dianzan", function () {
+                // 点赞操作
+                if ($(this).attr("style") == null) {
+                    str = `<span class="glyphicon glyphicon-thumbs-up" style="color: red;"></span>`;
+                    $(this).replaceWith(str);
+
+                    // 点赞数加一操作
+                    var reply_id = "#" + $(this).attr("value");
+                    var reply_id1 = $(this).attr("value")
+                    var num = parseInt($(reply_id).html());
+                    var like_count = num + 1;
+
+                    str = `<span class="badge" style="background-color: #F0AD4E;" id="${reply_id}">${like_count}</span>`;
+                    $(reply_id).replaceWith(str);
+
+                    //获取用户id
+                    var user_id = $.cookie("user_id");
+                    $.ajax({
+                        method: "get",
+                        url: "../../php/update_like.php",
+                        data: {
+                            reply_id: reply_id1,
+                            like_count: like_count,
+                            user_id: user_id
+                        },
+                        success: function (result) {
+                            var obj = JSON.parse(result);
+                            if (obj.code == 1) {
+                                alert(obj.message);
+                            }
+                        },
+                        error: function (msg) {
+                            alert(msg);
+                        }
+                    })
+                }
+
+            })
+
+        })
+
+    </script>
+
+</head>
+
+<body>
+    <span class="glyphicon glyphicon-heart-empty"></span>
+    <span class="glyphicon glyphicon-heart" style="color: red;" ></span>
+    <div id="header"></div>
+
+     <!-- 容器 -->
+    <div id="contain" class="container-fluid">
+        <div id="hotNews" class="col-md-8"></div>
+        <div id="reply" class="col-md-4"></div>
+    </div>
+
+    <br><br>
+    <div style="clear:both;"></div>
+    <div style="text-align: center;">体育服务平台</div>
+</body>
+<script>
+    $("#header").load("../public/header.html");
+</script>
+
+</html>

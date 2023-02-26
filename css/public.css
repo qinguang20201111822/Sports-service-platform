@@ -1,0 +1,17 @@
+.img1 {
+    width: 28x;
+    height: 28px;
+    border: 1px solid rgb(120, 120, 129);
+    border-radius: 100%;
+    overflow: hidden;
+}
+#img1 {
+    width: 28x;
+    height: 28px;
+    border: 1px solid rgb(120, 120, 129);
+    border-radius: 100%;
+    overflow: hidden;
+}
+.row {
+    display: contents;
+}

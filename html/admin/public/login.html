@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../css/log_reg.css">
+
+    <script src="../../../js/jQuery.js"></script>
+    <script src="../../../js/jquery.cookie.js"></script>
+    <script>
+        $(function () {
+            //验证码
+            // 获取元素
+            var input = document.getElementById('vcode');
+            var div = document.getElementById('click_vcode');
+
+            // 搞一个字符库
+            var characters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890";
+            var str; // str用来储存验证码的文本
+
+            // 生成一个在[l,r]范围内的随机整数的函数
+            function getRandom(l, r) {
+                return parseInt(l + Math.random() * (r - l + 1));
+            }
+
+            // 设置文本不可选中
+            div.addEventListener('selectstart', function (e) {
+                e.preventDefault();
+            })
+
+            // 生成验证码的函数
+            function run() {
+                // 先重置str
+                str = '';
+                // 删除掉div中的所有子节点
+                while (div.hasChildNodes()) {
+                    div.removeChild(div.firstChild);
+                }
+                // 生成由四个字符组成的验证码
+                for (var i = 0; i < 4; i++) {
+                    // 创建一个span对象
+                    var span = document.createElement('span');
+
+                    // 设置文本（从字库中随机抽取一个字符）
+                    span.innerHTML = characters[getRandom(0, characters.length - 1)];
+
+                    // 设置一些随机的样式
+                    span.style.display = 'inline-block';
+                    span.style.fontSize = getRandom(16, 32) + 'px';
+                    span.style.color = 'rgb(' + getRandom(0, 200) + ',' + getRandom(0, 200) + ',' + getRandom(0, 200) + ')';
+                    span.style.transform = 'translate(' + getRandom(-5, 5) + 'px, ' + getRandom(-5, 5) + 'px) rotate(' + getRandom(-20, 20) + 'deg)';
+                    str += span.innerHTML; // str记录字符
+                    div.appendChild(span); // 将span添加到div中
+                }
+            }
+
+
+            run(); // 每次打开/刷新页面时先调用一次
+            div.addEventListener('click', run); // 每次点击验证码的时候调用一次
+
+            $(".container").on("click", "#btn1", function () {
+                var name = $("#name").val();
+                var pw = $("#pw").val();
+                var vcode = $("#vcode").val();
+                var oAlert = document.getElementById("alert_info");
+                $.ajax({
+                    method: "post",
+                    url: "../../../php/admin/login/login.php",
+                    data: {
+                        name: name,
+                        pw: pw,
+                        vcode: vcode,
+                        config_vcode: str
+                    },
+                    success: function (result) {
+                        var obj = JSON.parse(result);
+
+                        //利用js的特效进行在页面提示
+                        if (obj.code == 0) {
+                            //用户名字放cookie中
+                            $.cookie("user_id", obj.user_id, {
+                                expires: 1,
+                                path: "/"
+                            });
+                            $.cookie("user_name", obj.user_name, {
+                                expires: 1,
+                                path: "/"
+                            });
+                            oAlert.className = "alert alert-success";
+                            // 设置时间阀，跳转到首界面页面
+                            setTimeout(function () {
+                                location.href = "index.html";
+                            }, 2000);
+                        } else {
+                            run();//刷新验证码
+                            oAlert.className = "alert alert-danger";
+                        }
+                        oAlert.style.display = 'block';
+                        oAlert.innerHTML = obj.message;
+                    },
+                    error: function (msg) {
+                        alert(msg);
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+
+<body background="../../../image/background/background1.jpeg">
+    <div class="container">
+        <div class="panel panel-default  pull-right" id="register">
+            <div class="panel-heading" style="text-align: center;">
+                <h4>欢迎登陆 <strong>后台管理中心</strong> </h4>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="name">用户名</label>
+                    <input type="text" class="form-control" id="name" placeholder="请输入用户名或手机号">
+                </div>
+                <div class="form-group">
+                    <label for="pw">密码</label>
+                    <input type="password" class="form-control" id="pw" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label for="sex" class="form-inline">
+                        <input type="text" style="width: 200px;" class="form-control " id="vcode"
+                            placeholder="请输入右方验证码">
+                        <a id="click_vcode"></a>
+                    </label>
+                </div>
+                <div id="alert_info"></div>
+                <button id="btn1" class="btn btn-primary pull-right">立即登录</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

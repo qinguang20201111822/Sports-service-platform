@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>约球频道</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/public.css">
+
+    <script src="../../js/jQuery.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script src="../../js/tools.js"></script>
+    <script>
+        window.onload = function () {
+            //赛事帖子的数据获取
+            $.ajax({
+                method: "get",
+                url: "../../php/get_yueqiu.php",
+                data: {
+                    module_id: GetUrlString("id")
+                },
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    var arr = obj.datas;
+                    //防止非合法验证
+                    if (obj.code != 0) {
+                        var str = `
+                        <div class="alert alert-danger" role="alert"><h2>${obj.datas}</h2></div>`;
+                        $(str).insertAfter("#saishi");
+                    } else {
+                        //输出标题
+                        var str = `
+                        <ol class="breadcrumb">
+                            <li><a href="../public/index.html">HOME</a></li>
+                            <li>${obj.father_title}</li>
+                            <li class="active">${obj.son_title}</li>
+                        </ol>
+                        `;
+                        $(str).insertAfter("#daohang");
+                        
+                        var user_head = $.cookie("user_head");
+                        //输出赛事帖子内容
+                        var str = `<div class="row" >`;
+                        for (var i = 0; i < arr.length; i++) {
+                            str += `
+                            <div class="col-sm-6 col-md-3" style="height:470px">
+                                <div class="thumbnail" >
+                                    <a href="../show/show_public.html?id=${arr[i].id}"><img src="${user_head}"></a>
+                                    <div class="caption">
+                                        <h4>${arr[i].content}</h4>
+                                        <p>
+                                            <a href="#" class="btn btn-info" role="button">浏览</a>
+                                            <a href="#" class="btn btn-default" role="button">Join</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        }
+                        str += `</div>`;
+                        $(str).insertAfter("#saishi");
+                    }
+                },
+                error: function (msg) {
+                    alert(msg);
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <div id="header"></div>
+
+    <!-- 导航栏 -->
+    <div id="daohang" ></div>
+
+    <!-- 赛事帖子 -->
+    <div id="saishi"></div>
+
+    <div style="clear:both;"></div>
+    <div style="text-align: center;">体育服务平台</div>
+</body>
+<script>
+    $("#header").load("../public/header.html");
+</script>
+
+</html>

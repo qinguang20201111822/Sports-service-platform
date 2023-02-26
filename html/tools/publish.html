@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/buttons.css">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <title>发布约球</title>
+
+    <script src="../../js/jQuery.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script>
+
+        $(function () {
+            $.ajax({
+                method: "get",
+                url: "../../php/get_portName.php",
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    var arr = obj.datas_part;
+                    var str = ``;
+                    for (var i = 0; i < arr.length; i++) {
+                        str += `<option value="${arr[i].id}">${arr[i].module_name}</option>`;
+                    }
+                    $("#part").append(str);
+                },
+                error: function (msg) {
+                    alert(msg);
+                }
+            });
+
+
+            $("#btn1").on("click", function () {
+                var aInputs=document.getElementsByTagName("input");
+                // var aInputs = $("input").val();
+                var oBtn1 = $("#btn1").val();
+                var module_id = $("#part").val();
+                var content = $("#content").val();
+                //获取用户的id
+                var user_id = $.cookie("user_id");
+                $.ajax({
+                    method: "post",
+                    url: "../../php/publish.php",
+                    data: {
+                        user_id: user_id,
+                        module_id: module_id,
+                        place: aInputs[1].value,
+                        aim_time: aInputs[2].value,
+                        content: content,
+                    },
+                    success: function (result) {
+                        var obj = JSON.parse(result);
+                        if (obj.code == 1) {
+                            alert(obj.message);
+                        } else {
+                            alert(obj.message);
+                        }
+                    },
+                    error: function (msg) {
+                        alert(msg);
+                    }
+                });
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <div id="header"></div>
+    <div class="container">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">发布约球</h3>
+            </div>
+            <div class="panel-body">
+                <!-- <form class="form-horizontal" role="form"> -->
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="text" class="form-control" id="place" placeholder="地点">
+                            <br>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input type="text" class="form-control" id="time" placeholder="时间">
+                            <br>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <textarea class="form-control" rows="3" placeholder="具体描述" id="content"></textarea>
+                            <br>
+                        </div>
+                    </div>
+                   
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <select id="part" class="form-control btn btn-info">
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <br>
+                            <button type="button" class="form-control button button-3d button-primary button-rounded" id="btn1">发布约球</button>
+                        </div>
+                    </div>
+                <!-- </form> -->
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $("#header").load("../public/header.html");
+</script>
+
+</html>

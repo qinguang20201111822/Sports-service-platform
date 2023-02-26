@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/public.css">
+    <link rel="stylesheet" href="../../css/buttons.css">
+
+    <script src="../../js/jQuery.js"></script>
+    <!-- 将框架隔离边框 -->
+
+    <script>
+        window.onload = function () {
+            //获取版块的内容
+            $.ajax({
+                method: "post",
+                url: "../../php/index.php",
+                success: function (result) {
+                    //处理转化数据
+                    var obj = JSON.parse(result);
+                    var arr_father = obj.datas_father;
+                    var arr_son = obj.datas_son;
+                    var arr_count = obj.datas_count;
+                    for (var i = 0; i < arr_father.length; i++) {
+                        var str = `
+                        <h3><span class="label label-danger">New</span> ${arr_father[i].module_name} </h3>
+                        <div class="row">
+                        `;
+                        for (var j = 0; j < arr_son.length; j++) {
+                            if (arr_father[i].id == arr_son[j].father_module_id) {
+                                str += `
+                                <div class="col-sm-6 col-md-3">
+                                <div class="thumbnail">`;
+                                //进行版块分离跳转
+                                if (arr_father[i].module_name == '约球频道') {
+                                    str += `
+                                    <a href="../BanKuai/YueQiu.html?id=${arr_son[j].id}"><img src="../../image/basketball.jpeg"></a>`;
+                                } else if (arr_father[i].module_name == '赛事专区') {
+                                    str += `
+                                    <a href="../BanKuai/SaiShi.html?id=${arr_son[j].id}"><img src="../../image/basketball.jpeg"></a>`;
+                                } else if (arr_father[i].module_name == '集锦拍摄') {
+                                    str += `
+                                    <a href="../BanKuai/shooting.html?id=${arr_son[j].id}"><img src="../../image/basketball.jpeg"></a>`;
+                                }
+
+                                str += `
+                                <div class="caption">
+                                <h3>${arr_son[j].module_name}</h3>`;
+
+                                if (arr_father[i].module_name == '集锦拍摄') {
+                                    str += `
+                                    <p>${arr_son[j].info}</p>
+                                    <p>
+                                    <a class="btn btn-default" role="button">点赞数：<span class="badge">${arr_count[arr_son[j].id]}</span></a>
+                                    <a href="../BanKuai/shooting.html?id=${arr_son[j].id}" class="button button-border button-rounded button-primary" role="button">查看</a>
+                                    </p>
+                                    </div></div></div>`;
+                                } else if (arr_father[i].module_name == '约球频道') {
+                                    str += `
+                                    <p>最新发布：</p>
+                                    <p>
+                                    <a class="btn btn-default" role="button">近一周发布数：<span class="badge">${arr_count[arr_son[j].id]}</span></a>
+                                    <a href="../BanKuai/YueQiu.html?id=${arr_son[j].id}" class="button button-border button-rounded button-primary" role="button">浏览</a>
+                                    </p>
+                                    </div></div></div>`;
+                                } else if (arr_father[i].module_name == '赛事专区') {
+                                    str += `
+                                    <p>最新赛事：</p>
+                                    <p>
+                                    <a class="btn btn-default" role="button">近一周赛事数：<span class="badge">${arr_count[arr_son[j].id]}</span></a>
+                                    <a href="../BanKuai/SaiShi.html?id=${arr_son[j].id}" class="button button-border button-rounded button-primary" role="button">浏览</a>
+                                    </p>
+                                    </div></div></div>`;
+                                } else {
+                                    str += `
+                                    <p>${arr_son[j].info}</p>
+                                    <p>
+                                    <a class="btn btn-default" role="button">总浏览量：<span class="badge">${arr_count[arr_son[j].id]}</span></a>
+                                    <a href="../BanKuai/shooting.html?id=${arr_son[j].id}" class="button button-border button-rounded button-primary" role="button">查看</a>
+                                    </p>
+                                    </div></div></div>`;
+                                }
+                            }
+                        }
+                        str += `</div>`;
+                        $(str).insertAfter("#bankuai");
+                    }
+
+                },
+                error: function (msg) {
+                    alert(msg);
+                }
+            });
+            //获取新闻热点的内容
+            $.ajax({
+                method: "post",
+                url: "../../php/hot_news.php",
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    var arr = obj.datas;
+                    var str = `
+                        <h3><span class="label label-danger">New</span> 热门动态 </h3>`;
+                    for (var i = 0; i < arr.length; i++) {
+                        str += `
+                        <div class="row">
+                            <div class="col-sm-6 col-md-2">
+                                <div class="thumbnail">
+                                    <a href="../BanKuai/hotNews.html?id=${arr[i].news_id}"><img src="${arr[i].photo}"></a>
+                                    <div class="caption">
+                                        <h4>${arr[i].title}</h4>
+                                        <span class="label label-danger">发布时间</span><span class="badge"> ${arr[i].publish_time}</span>
+                                        <p>
+                                            <h4>
+                                                <span class="label label-info">浏览量</span><span class="badge"> ${arr[i].view_count}</span>
+                                                <p></p> 
+                                                <a href="../BanKuai/hotNews.html?id=${arr[i].news_id}" class="button button-border button-rounded button-primary" role="button">查看详情</a>
+                                            </h4>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    str += `</div>`;
+                    $(str).insertAfter("#hot_news");
+                },
+                error: function (msg) {
+                    alert(msg);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body background="../../image/background/background1.jpeg">
+    <div id="header"></div>
+
+    <!-- 热门动态 -->
+    <div id="hot_news"></div>
+
+
+    <!-- 相应版块 -->
+    <div id="bankuai"></div>
+    <!-- 辅助工具 -->
+    <div id="tools"></div>
+    <h3><span class="label label-danger">New</span> 辅助工具 </h3>
+    <div class="row">
+        <div class="col-sm-6 col-md-3">
+            <div class="thumbnail">
+                <!-- <img src="..." alt="..."> -->
+                <div class="caption">
+                    <h3>Thumbnail label</h3>
+                    <p>...</p>
+                    <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default"
+                            role="button">Button</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="clear:both;"></div>
+    <div style="text-align: center;">体育服务平台</div>
+
+</body>
+<script>
+    $("#header").load("../public/header.html");
+</script>
+
+</html>

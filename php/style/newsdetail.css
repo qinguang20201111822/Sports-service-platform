@@ -1,0 +1,7 @@
+.news_show{ margin:0 auto;}
+.news_show .show_title {text-align:center; font-size:14px; border-bottom:1px dotted #c7c7c7; padding-bottom:15px;margin-bottom:20px;}
+.news_show h2{ font-size:24px;}
+.news_show span{ padding-right:10px;}
+.news_show .paging{ text-align:center;}
+.news_show a{ color:#0871A5; text-decoration:none;}
+.news_show .content{font-size:15px;text-indent:28px;}

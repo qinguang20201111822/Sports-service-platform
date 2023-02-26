@@ -1,0 +1,19 @@
+#register {
+    width: 400px;
+    margin: 120px auto;
+}
+
+#alert_info {
+    margin: 2px;
+    padding: 2px;
+    text-align: center;
+    margin-bottom: 10px;
+    display: none;
+}
+
+#footer {
+    border-top: 1px solid #d3d3d3;
+
+    padding: 20px 0;
+    margin-top: 30px;
+}

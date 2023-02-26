@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/log_reg.css">
+    
+    <script src="../../js/jQuery.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script>
+        window.onload = function () {
+            var oBtn1 = document.getElementById("btn1");
+            var oBtn2 = document.getElementById("btn2");
+            var aInputs = document.getElementsByTagName("input");
+            var oAlert = document.getElementById("alert_info");
+            oBtn1.onclick = function () {
+                $.ajax({
+                    method: "post",
+                    url: "../../php/login.php",
+                    data: {
+                        name: aInputs[0].value,
+                        pw: aInputs[1].value,
+                        vcode: aInputs[2].value
+                    },
+                    
+                    success: function (result) {
+                        var obj = JSON.parse(result);
+
+                        //利用js的特效进行在页面提示
+                        if (obj.code == 0) {
+                            //用户名字放cookie中
+                            $.cookie("username",obj.username,{
+                                expires:1,
+                                path:"/"
+                            });
+                            //用户头像放cookie中
+                            $.cookie("user_head",obj.user_head,{
+                                expires:1,
+                                path:"/"
+                            });
+                             //用户id放cookie中
+                             $.cookie("user_id",obj.user_id,{
+                                expires:1,
+                                path:"/"
+                            });
+                            
+                            oAlert.className = "alert alert-success";
+                            // 设置时间阀，跳转到首界面页面
+                            setTimeout(function(){
+                            	location.href="../public/index.html";
+                            },2000); 
+                        } else {
+                            oAlert.className = "alert alert-danger";
+                        }
+                        oAlert.style.display = 'block';
+                        oAlert.innerHTML = obj.message;
+                    },
+                    error: function (msg) {
+                        alert(msg);
+                    }
+                })
+            }
+            oBtn2.onclick = function () {
+                location.href = "register.html";
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container ">
+        <div class="panel panel-primary  pull-right" id="register">
+            <div class="panel-heading" style="text-align: center;">
+                <h4>欢迎登陆</h4>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="name">用户名</label>
+                    <input type="text" class="form-control" name="name" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="pw">密码</label>
+                    <input type="text" class="form-control" name="pw" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label for="vcode">验证码</label>
+                    <input type="text" class="form-control" name="vcode" placeholder="输入下方验证码">
+                </div>
+                <div id="alert_info"></div>
+                <button id="btn2" class="btn btn-default pull-left" style="color:#0827ef;">马上注册</button>
+                <button id="btn1" class="btn btn-primary pull-right">立即登录</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div style="clear:both;"></div>
+    <div style="text-align: center;">体育服务平台</div>
+</body>
+
+</html>

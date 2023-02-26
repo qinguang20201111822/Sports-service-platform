@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户中心</title>
+    <!-- <link rel="stylesheet" href="../../css/user_center/user_center.css"> -->
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/public.css">
+    <link rel="stylesheet" href="../../css/buttons.css">
+
+    <script src="../../js/require.js" async="true" defer data-main="../../js/user/main"></script>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div id="header"></div>
+
+        <div class="col-md-2 panel panel-default">
+            <ul class="nav nav-pills nav-stacked">
+                <li role="presentation" id="myCenter" class="active"><a>个人中心</a></li>
+                <li role="presentation" id="myPublish"><a>我的发布</a></li>
+                <li role="presentation" id="myMessage"><a>我的消息<span class="badge"
+                            style="background-color: red;">4</span></a> </li>
+            </ul>
+        </div>
+        <div id="reply" class="col-md-8 ">
+            <div id="userHeader" class="panel panel-default">
+                <!-- 个人中心 -->
+                <div id="list_forUser"></div>
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>

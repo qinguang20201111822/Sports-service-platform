@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>用户注册</title>
+	<link rel="stylesheet" href="../../css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../css/log_reg.css">
+	
+    <script src="../../js/jQuery.js"></script>
+	
+	<script>
+		window.onload = function () {
+			var oBtn = document.getElementById("btn1");
+            var oBtn2 = document.getElementById("btn2");
+			var aInputs = document.getElementsByTagName("input");
+			var oAlert = document.getElementById("alert_info");
+			oBtn.onclick = function () {
+				$.ajax({
+					method: "post",
+					url: "../../php/register.php",
+					data: {
+						name: aInputs[0].value,
+						phone:aInputs[1].value,
+						password: aInputs[2].value,
+						confirm_pw: aInputs[3].value,
+						vcode: aInputs[4].value
+					},
+					success: function (result) {
+						var obj = JSON.parse(result);
+						//利用js的特效进行在页面提示
+						if(obj.code==0){
+							oAlert.className="alert alert-success";
+							//设置时间阀，跳转到登录页面
+							setTimeout(function(){
+								location.href="login.html";
+							},2000);
+						}else{
+							oAlert.className="alert alert-danger";
+						}
+						oAlert.style.display='block';
+						oAlert.innerHTML=obj.message;
+					},
+					error: function (msg) {
+						alert(msg);
+					}
+				})
+			}
+			oBtn2.onclick = function () {
+                location.href="login.html";
+            }
+		}
+	</script>
+</head>
+
+<body>
+	<div class="container ">
+		<div class="panel panel-primary pull-right" id="register">
+			<div class="panel-heading" style="text-align: center;">
+				<h4>欢迎注册</h4>
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label for="name">用户名</label>
+					<input type="text" class="form-control" name="name" placeholder="请设置用户名">
+				</div>
+				<div class="form-group">
+					<label for="phone">手机号</label>
+					<input type="text" class="form-control" name="phone" placeholder="可用于登录和找回密码">
+				</div>
+				<div class="form-group">
+					<label for="password">密码</label>
+					<input type="text" class="form-control" name="password" placeholder="请输入大于6位的密码">
+				</div>
+				<div class="form-group">
+					<label for="confirm_pw">确认密码</label>
+					<input type="text" class="form-control" name="confirm_pw" placeholder="请再输入相同密码">
+				</div>
+				<div class="form-group">
+					<label for="vcode">验证码</label>
+					<input type="text" class="form-control" name="vcode" placeholder="请输入下方验证码">
+				</div>
+				<div id="alert_info"></div>
+				<button id="btn2" class="btn btn-default pull-left" style="color:#0827ef;">马上登录</button>
+				<button id="btn1" class="btn btn-primary pull-right">立即注册</button>
+			</div>
+		</div>
+	</div>
+	<div style="clear:both;"></div>
+	<div style="text-align: center;">体育服务平台</div>
+
+</body>
+
+</html>
